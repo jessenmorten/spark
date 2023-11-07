@@ -1,3 +1,5 @@
+using Spark.Relay;
+
 namespace Spark.UnitTests.Mocks;
 
 public class MockConnectionManager : IConnectionManager

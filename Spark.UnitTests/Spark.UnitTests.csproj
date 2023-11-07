@@ -25,7 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Spark.Entities\Spark.Entities.csproj" />
     <ProjectReference Include="..\Spark.UseCases\Spark.UseCases.csproj" />
-    <ProjectReference Include="..\Spark.Adapters\Spark.Adapters.csproj" />
+    <ProjectReference Include="..\Spark.Relay\Spark.Relay.csproj" />
   </ItemGroup>
 
 </Project>

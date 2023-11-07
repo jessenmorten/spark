@@ -3,21 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spark.Entities", "Spark.Entities\Spark.Entities.csproj", "{99FC767E-9129-4411-8165-0372A7C29262}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spark.Entities", "Spark.Entities\Spark.Entities.csproj", "{99FC767E-9129-4411-8165-0372A7C29262}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spark.UseCases", "Spark.UseCases\Spark.UseCases.csproj", "{70C8C861-1AE5-410C-ABA2-2DA74B29B610}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spark.UseCases", "Spark.UseCases\Spark.UseCases.csproj", "{70C8C861-1AE5-410C-ABA2-2DA74B29B610}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spark.Adapters", "Spark.Adapters\Spark.Adapters.csproj", "{5F122EA6-380F-445E-B7D7-FE7F5D6C3D3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spark.Relay", "Spark.Relay\Spark.Relay.csproj", "{5F122EA6-380F-445E-B7D7-FE7F5D6C3D3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spark.UnitTests", "Spark.UnitTests\Spark.UnitTests.csproj", "{E99BDA90-A6AD-4CA6-B058-D7B6742475F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spark.UnitTests", "Spark.UnitTests\Spark.UnitTests.csproj", "{E99BDA90-A6AD-4CA6-B058-D7B6742475F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{99FC767E-9129-4411-8165-0372A7C29262}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -36,5 +33,8 @@ Global
 		{E99BDA90-A6AD-4CA6-B058-D7B6742475F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E99BDA90-A6AD-4CA6-B058-D7B6742475F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E99BDA90-A6AD-4CA6-B058-D7B6742475F6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

@@ -1,11 +1,11 @@
-using System.Collections.Concurrent;
+using Spark.Relay;
 using Spark.UnitTests.Mocks;
 
 namespace Spark.UnitTests;
 
 public class ConnectionManagerTests
 {
-    private ConnectionManager _connectionManager;
+    private readonly ConnectionManager _connectionManager;
 
     public ConnectionManagerTests()
     {
@@ -63,30 +63,5 @@ public class ConnectionManagerTests
         Assert.True(found);
         Assert.NotNull(outVal);
         Assert.Equal(connection, outVal);
-    }
-}
-
-// TODO: Refactor: move to appropriate package, don't know where yet
-public class ConnectionManager : IConnectionManager
-{
-    private readonly ConcurrentDictionary<string, IConnection> _connections = new();
-
-    public int Count => _connections.Count;
-
-    public void Add(IConnection connection)
-    {
-        _ = connection ?? throw new ArgumentNullException(nameof(connection));
-
-        if (!_connections.TryAdd(connection.Id, connection))
-        {
-            throw new InvalidOperationException($"Connection already added, id: {connection.Id}");
-        }
-    }
-
-    public bool TryGet(string connectionId, out IConnection? connection)
-    {
-        var success = _connections.TryGetValue(connectionId, out var conn);
-        connection = conn;
-        return success;
     }
 }
