@@ -116,7 +116,9 @@ public class ServerTests
 // TODO: Refactor: move to appropriate packages, don't know where yet
 public interface IConnectionManager
 {
+    int Count { get; }
     void Add(IConnection connection);
+    bool TryGet(string connectionId, out IConnection? connection);
 }
 
 public enum ConnectionType
@@ -125,6 +127,7 @@ public enum ConnectionType
 
 public interface IConnection
 {
+    string Id { get; }
 }
 
 public interface ISocket

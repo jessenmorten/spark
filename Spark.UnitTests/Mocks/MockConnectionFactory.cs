@@ -6,7 +6,8 @@ public class MockConnectionFactory : IConnectionFactory
 
     public IConnection Create(ISocket socket, ConnectionType connectionType)
     {
-        var connection = new MockConnection();
+        var id = Guid.NewGuid().ToString();
+        var connection = new MockConnection(id);
         CreateCalls.Add(new(socket, connectionType, connection));
         return connection;
     }
