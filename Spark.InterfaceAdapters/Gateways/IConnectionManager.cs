@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Spark.Relay;
+namespace Spark.InterfaceAdapters.Gateways;
 
 public interface IConnectionManager
 {

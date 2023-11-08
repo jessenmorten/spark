@@ -1,7 +1,8 @@
-﻿using System.Collections.Concurrent;
+﻿using Spark.InterfaceAdapters.Gateways;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Spark.Relay;
+namespace Spark.Hub;
 
 public class ConnectionManager : IConnectionManager
 {

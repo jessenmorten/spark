@@ -1,26 +1,24 @@
-﻿using System.Net.Sockets;
+﻿using Spark.InterfaceAdapters.Gateways;
+using System.Net.Sockets;
 
-namespace Spark.Relay;
+namespace Spark.Hub;
 
 public class Server
 {
     private readonly object _lock;
     private readonly ServerOptions _options;
     private readonly ISocketFactory _socketFactory;
-    private readonly IConnectionFactory _connectionFactory;
     private readonly IConnectionManager _connectionManager;
     private CancellationTokenSource? _cts;
 
     public Server(
         ServerOptions options,
         ISocketFactory socketFactory,
-        IConnectionFactory connectionFactory,
         IConnectionManager socketList)
     {
         _lock = new();
         _options = options;
         _socketFactory = socketFactory;
-        _connectionFactory = connectionFactory;
         _connectionManager = socketList;
     }
 
@@ -74,8 +72,7 @@ public class Server
                     break;
                 }
 
-                var connection = _connectionFactory.Create(client, _options.ConnectionType);
-                _connectionManager.Add(connection);
+                _connectionManager.Add(client);
             }
             catch
             {

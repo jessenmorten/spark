@@ -1,4 +1,4 @@
-using Spark.Relay;
+using Spark.Hub;
 using System.Net.Sockets;
 
 namespace Spark.UnitTests.Mocks;

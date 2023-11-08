@@ -1,4 +1,4 @@
-using Spark.Relay;
+using Spark.InterfaceAdapters.Gateways;
 
 namespace Spark.UnitTests.Mocks;
 

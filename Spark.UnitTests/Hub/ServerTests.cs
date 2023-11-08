@@ -1,16 +1,15 @@
 using System.Net;
 using System.Net.Sockets;
-using Spark.Relay;
+using Spark.Hub;
 using Spark.UnitTests.Mocks;
 
-namespace Spark.UnitTests;
+namespace Spark.UnitTests.Hub;
 
 public class ServerTests
 {
     private readonly ServerOptions _options;
     private readonly Server _server;
     private readonly MockConnectionManager _connectionManager;
-    private readonly MockConnectionFactory _connectionFactory;
     private readonly MockSocketFactory _socketFactory;
 
     public ServerTests()
@@ -18,16 +17,13 @@ public class ServerTests
         _options = new ServerOptions
         {
             EndPoint = IPEndPoint.Parse("127.0.0.1:8080"),
-            Backlog = 10,
-            ConnectionType = (ConnectionType)12345
+            Backlog = 10
         };
         _socketFactory = new MockSocketFactory();
-        _connectionFactory = new MockConnectionFactory();
         _connectionManager = new MockConnectionManager();
         _server = new Server(
             _options,
             _socketFactory,
-            _connectionFactory,
             _connectionManager);
     }
 
@@ -77,11 +73,8 @@ public class ServerTests
         var acceptCall = Assert.Single(mockSocket.AcceptCalls);
         var mockClientSocket = new MockSocket();
         acceptCall.TaskCompletionSource.SetResult(mockClientSocket);
-        var createConnectionCall = Assert.Single(_connectionFactory.CreateCalls);
-        Assert.Equal(mockClientSocket, createConnectionCall.Socket);
-        Assert.Equal(_options.ConnectionType, createConnectionCall.ConnectionType);
         var addCall = Assert.Single(_connectionManager.AddCalls);
-        Assert.Equal(createConnectionCall.Connection, addCall.Connection);
+        Assert.Equal(mockClientSocket, addCall.Connection);
     }
 
     [Fact]

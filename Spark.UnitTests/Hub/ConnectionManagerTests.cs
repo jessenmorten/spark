@@ -1,7 +1,7 @@
-using Spark.Relay;
+using Spark.Hub;
 using Spark.UnitTests.Mocks;
 
-namespace Spark.UnitTests;
+namespace Spark.UnitTests.Hub;
 
 public class ConnectionManagerTests
 {
@@ -29,8 +29,8 @@ public class ConnectionManagerTests
     [Fact]
     public void AddThrowsWhenAlreadyAdded()
     {
-        var first = new MockConnection("connection-id");
-        var second = new MockConnection("connection-id");
+        var first = new MockSocket("connection-id");
+        var second = new MockSocket("connection-id");
         _connectionManager.Add(first);
         var action = () => _connectionManager.Add(second);
         var message = Assert.Throws<InvalidOperationException>(action);
@@ -40,8 +40,8 @@ public class ConnectionManagerTests
     [Fact]
     public void AddIncreasesCount()
     {
-        _connectionManager.Add(new MockConnection(Guid.NewGuid().ToString()));
-        _connectionManager.Add(new MockConnection(Guid.NewGuid().ToString()));
+        _connectionManager.Add(new MockSocket(Guid.NewGuid().ToString()));
+        _connectionManager.Add(new MockSocket(Guid.NewGuid().ToString()));
         Assert.Equal(2, _connectionManager.Count);
     }
 
@@ -57,7 +57,7 @@ public class ConnectionManagerTests
     [Fact]
     public void TryGetReturnsTrue()
     {
-        var connection = new MockConnection("connection-id");
+        var connection = new MockSocket("connection-id");
         _connectionManager.Add(connection);
         var found = _connectionManager.TryGet(connection.Id, out var outVal);
         Assert.True(found);

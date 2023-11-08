@@ -1,4 +1,4 @@
-using Spark.Relay;
+using Spark.Hub;
 using System.Net;
 
 namespace Spark.UnitTests.Mocks;
@@ -8,6 +8,15 @@ public class MockSocket : ISocket
     public List<BindCall> BindCalls { get; } = new();
     public List<ListenCall> ListenCalls { get; } = new();
     public List<AcceptCall> AcceptCalls { get; } = new();
+
+    public string Id { get; }
+
+    public MockSocket() : this(Guid.NewGuid().ToString()) { }
+
+    public MockSocket(string id)
+    {
+        Id = id;
+    }
 
     public void Bind(IPEndPoint endPoint)
     {
@@ -24,6 +33,16 @@ public class MockSocket : ISocket
         var tcs = new TaskCompletionSource<ISocket>();
         AcceptCalls.Add(new(cancellationToken, tcs));
         return tcs.Task;
+    }
+
+    public Task<int> SendAsync(ArraySegment<byte> data)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<int> ReceiveAsync(ArraySegment<byte> data)
+    {
+        throw new NotImplementedException();
     }
 
     public record BindCall(IPEndPoint EndPoint);

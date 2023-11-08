@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\Spark.InterfaceAdapters\Spark.InterfaceAdapters.csproj" />
     <ProjectReference Include="..\Spark.UseCases\Spark.UseCases.csproj" />
   </ItemGroup>
 

@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
 
-namespace Spark.Relay;
+namespace Spark.Hub;
 
 public interface ISocketFactory
 {

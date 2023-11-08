@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spark.Entities", "Spark.Ent
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spark.UseCases", "Spark.UseCases\Spark.UseCases.csproj", "{70C8C861-1AE5-410C-ABA2-2DA74B29B610}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spark.Relay", "Spark.Relay\Spark.Relay.csproj", "{5F122EA6-380F-445E-B7D7-FE7F5D6C3D3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spark.Hub", "Spark.Hub\Spark.Hub.csproj", "{5F122EA6-380F-445E-B7D7-FE7F5D6C3D3A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spark.UnitTests", "Spark.UnitTests\Spark.UnitTests.csproj", "{E99BDA90-A6AD-4CA6-B058-D7B6742475F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spark.InterfaceAdapters", "Spark.InterfaceAdapters\Spark.InterfaceAdapters.csproj", "{92DF9302-0599-4A35-92D5-CE11A4C12CD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,8 +35,15 @@ Global
 		{E99BDA90-A6AD-4CA6-B058-D7B6742475F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E99BDA90-A6AD-4CA6-B058-D7B6742475F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E99BDA90-A6AD-4CA6-B058-D7B6742475F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92DF9302-0599-4A35-92D5-CE11A4C12CD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92DF9302-0599-4A35-92D5-CE11A4C12CD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92DF9302-0599-4A35-92D5-CE11A4C12CD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92DF9302-0599-4A35-92D5-CE11A4C12CD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {975CB936-097D-47F7-815F-AA154AC8B722}
 	EndGlobalSection
 EndGlobal
