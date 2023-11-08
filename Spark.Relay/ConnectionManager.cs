@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Spark.Relay;
 
@@ -18,7 +19,7 @@ public class ConnectionManager : IConnectionManager
         }
     }
 
-    public bool TryGet(string connectionId, out IConnection? connection)
+    public bool TryGet(string connectionId, [NotNullWhen(true)] out IConnection? connection)
     {
         var success = _connections.TryGetValue(connectionId, out var conn);
         connection = conn;
