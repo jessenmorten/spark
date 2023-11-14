@@ -129,7 +129,7 @@ public class ServerTests
     }
 
     [Fact]
-    public async Task StopCancelsAcceptLoop()
+    public void StopCancelsAcceptLoop()
     {
         // Arrange
         var serverSocket = Substitute.For<ISocket>();
@@ -140,12 +140,11 @@ public class ServerTests
             .Returns(serverSocket);
         serverSocket
             .AcceptAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(clientSocket));
+            .Returns(Task.FromResult(clientSocket))
+            .AndDoes((x) => _server.Stop());
 
         // Act
         _server.Start();
-        _server.Stop();
-        await Task.Delay(_acceptDelay);
 
         // Assert
         _connectionManager.Received(0).Add(Arg.Any<IConnection>());
