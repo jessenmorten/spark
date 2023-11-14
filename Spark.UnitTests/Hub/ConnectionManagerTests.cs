@@ -1,5 +1,6 @@
 using Spark.Hub;
-using Spark.UnitTests.Mocks;
+using NSubstitute;
+using Spark.InterfaceAdapters.Gateways;
 
 namespace Spark.UnitTests.Hub;
 
@@ -21,7 +22,13 @@ public class ConnectionManagerTests
     [Fact]
     public void AddThrowsWhenConnectionIsNull()
     {
-        var action = () => _connectionManager.Add(null!);
+        // Arrange
+        IConnection connection = null!;
+
+        // Act
+        var action = () => _connectionManager.Add(connection);
+
+        // Assert
         var message = Assert.Throws<ArgumentNullException>(action);
         Assert.Equal("connection", message.ParamName);
     }
@@ -29,10 +36,17 @@ public class ConnectionManagerTests
     [Fact]
     public void AddThrowsWhenAlreadyAdded()
     {
-        var first = new MockSocket("connection-id");
-        var second = new MockSocket("connection-id");
+        // Arrange
+        var first = Substitute.For<ISocket>();
+        first.Id.Returns("connection-id");
+        var second = Substitute.For<ISocket>();
+        second.Id.Returns("connection-id");
         _connectionManager.Add(first);
+
+        // Act
         var action = () => _connectionManager.Add(second);
+
+        // Assert
         var message = Assert.Throws<InvalidOperationException>(action);
         Assert.Equal("Connection already added, id: connection-id", message.Message);
     }
@@ -40,16 +54,30 @@ public class ConnectionManagerTests
     [Fact]
     public void AddIncreasesCount()
     {
-        _connectionManager.Add(new MockSocket(Guid.NewGuid().ToString()));
-        _connectionManager.Add(new MockSocket(Guid.NewGuid().ToString()));
+        // Arrange
+        var first = Substitute.For<ISocket>();
+        first.Id.Returns("1");
+        var second = Substitute.For<ISocket>();
+        second.Id.Returns("2");
+
+        // Act
+        _connectionManager.Add(first);
+        _connectionManager.Add(second);
+        
+        // Assert
         Assert.Equal(2, _connectionManager.Count);
     }
 
     [Fact]
     public void TryGetReturnsFalse()
     {
+        // Arrange
         var id = "connection-id";
+
+        // Act
         var found = _connectionManager.TryGet(id, out var outVal);
+
+        // Assert
         Assert.False(found);
         Assert.Null(outVal);
     }
@@ -57,11 +85,17 @@ public class ConnectionManagerTests
     [Fact]
     public void TryGetReturnsTrue()
     {
-        var connection = new MockSocket("connection-id");
-        _connectionManager.Add(connection);
-        var found = _connectionManager.TryGet(connection.Id, out var outVal);
+        // Arrange
+        var socket = Substitute.For<ISocket>();
+        socket.Id.Returns("1");
+        _connectionManager.Add(socket);
+
+        // Act
+        var found = _connectionManager.TryGet(socket.Id, out var outVal);
+
+        // Assert
         Assert.True(found);
         Assert.NotNull(outVal);
-        Assert.Equal(connection, outVal);
+        Assert.Equal(socket, outVal);
     }
 }
