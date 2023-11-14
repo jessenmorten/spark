@@ -1,26 +1,28 @@
 using System.Net;
 using System.Net.Sockets;
+using NSubstitute;
 using Spark.Hub;
-using Spark.UnitTests.Mocks;
+using Spark.InterfaceAdapters.Gateways;
 
 namespace Spark.UnitTests.Hub;
 
 public class ServerTests
 {
+    private readonly TimeSpan _acceptDelay = TimeSpan.FromMilliseconds(25);
     private readonly ServerOptions _options;
     private readonly Server _server;
-    private readonly MockConnectionManager _connectionManager;
-    private readonly MockSocketFactory _socketFactory;
+    private readonly IConnectionManager _connectionManager;
+    private readonly ISocketFactory _socketFactory;
 
     public ServerTests()
     {
         _options = new ServerOptions
         {
             EndPoint = IPEndPoint.Parse("127.0.0.1:8080"),
-            Backlog = 10
+            Backlog = 42
         };
-        _socketFactory = new MockSocketFactory();
-        _connectionManager = new MockConnectionManager();
+        _socketFactory = Substitute.For<ISocketFactory>();
+        _connectionManager = Substitute.For<IConnectionManager>();
         _server = new Server(
             _options,
             _socketFactory,
@@ -30,10 +32,13 @@ public class ServerTests
     [Fact]
     public void StartThrowsWhenAlreadyStarted()
     {
+        // Arrange
         _server.Start();
 
+        // Act
         var action = () => _server.Start();
 
+        // Assert
         var exception = Assert.Throws<InvalidOperationException>(action);
         Assert.Equal("Server is already started", exception.Message);
     }
@@ -41,8 +46,10 @@ public class ServerTests
     [Fact]
     public void StopThrowsWhenNotStarted()
     {
+        // Act
         var action = () => _server.Stop();
 
+        // Assert
         var exception = Assert.Throws<InvalidOperationException>(action);
         Assert.Equal("Server is not started", exception.Message);
     }
@@ -50,60 +57,97 @@ public class ServerTests
     [Fact]
     public void StartUsesServerOptions()
     {
+        // Arrange
+        var socket = Substitute.For<ISocket>();
+
+        _socketFactory
+            .Create(_options.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
+            .Returns(socket);
+
+        // Act
         _server.Start();
 
-        var createCall = Assert.Single(_socketFactory.CreateCalls);
-        Assert.Equal(_options.EndPoint.AddressFamily, createCall.AddressFamily);
-        Assert.Equal(SocketType.Stream, createCall.SocketType);
-        Assert.Equal(ProtocolType.Tcp, createCall.ProtocolType);
-        var mockSocket = Assert.IsType<MockSocket>(createCall.Socket);
-        var bindCall = Assert.Single(mockSocket.BindCalls);
-        Assert.Equal(_options.EndPoint, bindCall.EndPoint);
-        var listenCall = Assert.Single(mockSocket.ListenCalls);
-        Assert.Equal(_options.Backlog, listenCall.Backlog);
+        // Assert
+        _socketFactory
+            .Received(1)
+            .Create(_options.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        socket
+            .Received(1)
+            .Bind(_options.EndPoint);
+        socket
+            .Received(1)
+            .Listen(_options.Backlog);
     }
 
     [Fact]
-    public void AcceptsClientSockets()
+    public async Task AcceptsClientSockets()
     {
-        _server.Start();
+        // Arrange
+        var serverSocket = Substitute.For<ISocket>();
+        var clientSocket = Substitute.For<ISocket>();
 
-        var createSocketCall = Assert.Single(_socketFactory.CreateCalls);
-        var mockSocket = Assert.IsType<MockSocket>(createSocketCall.Socket);
-        var acceptCall = Assert.Single(mockSocket.AcceptCalls);
-        var mockClientSocket = new MockSocket();
-        acceptCall.TaskCompletionSource.SetResult(mockClientSocket);
-        var addCall = Assert.Single(_connectionManager.AddCalls);
-        Assert.Equal(mockClientSocket, addCall.Connection);
+        _socketFactory
+            .Create(_options.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
+            .Returns(serverSocket);
+        serverSocket
+            .AcceptAsync(Arg.Any<CancellationToken>())
+            .Returns(
+                Task.FromResult(clientSocket),
+                Task.FromResult(clientSocket).Delay());
+
+        // Act
+        _server.Start();
+        await Task.Delay(_acceptDelay);
+
+        // Assert
+        _connectionManager.Received(1).Add(clientSocket);
     }
 
     [Fact]
-    public void AcceptHandlesExceptions()
+    public async Task AcceptHandlesExceptions()
     {
-        _server.Start();
+        // Arrange
+        var serverSocket = Substitute.For<ISocket>();
+        var clientSocket = Substitute.For<ISocket>();
 
-        var createCall = Assert.Single(_socketFactory.CreateCalls);
-        var mockSocket = Assert.IsType<MockSocket>(createCall.Socket);
-        var acceptCall = Assert.Single(mockSocket.AcceptCalls);
-        acceptCall.TaskCompletionSource.SetException(new Exception());
-        Assert.Empty(_connectionManager.AddCalls);
-        Assert.Equal(2, mockSocket.AcceptCalls.Count);
-        acceptCall = mockSocket.AcceptCalls[1];
-        acceptCall.TaskCompletionSource.SetResult(new MockSocket());
-        Assert.Single(_connectionManager.AddCalls);
+        _socketFactory
+            .Create(_options.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
+            .Returns(serverSocket);
+        serverSocket
+            .AcceptAsync(Arg.Any<CancellationToken>())
+            .Returns(
+                Task.FromException(new Exception()),
+                Task.FromResult(clientSocket),
+                Task.FromResult(clientSocket).Delay());
+
+        // Act
+        _server.Start();
+        await Task.Delay(_acceptDelay);
+
+        // Assert
+        _connectionManager.Received(1).Add(clientSocket);
     }
 
     [Fact]
-    public void StopCancelsAcceptLoop()
+    public async Task StopCancelsAcceptLoop()
     {
+        // Arrange
+        var serverSocket = Substitute.For<ISocket>();
+        var clientSocket = Substitute.For<ISocket>();
+
+        _socketFactory
+            .Create(_options.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
+            .Returns(serverSocket);
+        serverSocket
+            .AcceptAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(clientSocket));
+
+        // Act
         _server.Start();
         _server.Stop();
+        await Task.Delay(_acceptDelay);
 
-        var createCall = Assert.Single(_socketFactory.CreateCalls);
-        var mockSocket = Assert.IsType<MockSocket>(createCall.Socket);
-        var acceptCall = Assert.Single(mockSocket.AcceptCalls);
-        acceptCall.TaskCompletionSource.SetResult(new MockSocket());
-        Assert.Empty(_connectionManager.AddCalls);
+        // Assert
+        _connectionManager.Received(0).Add(Arg.Any<IConnection>());
     }
 }
-
