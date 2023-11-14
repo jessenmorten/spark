@@ -41,7 +41,14 @@ public class Server
 
         socket.Bind(_options.EndPoint);
         socket.Listen(_options.Backlog);
-        _ = AcceptLoop(socket, _cts.Token);
+
+        var cancellationToken = _cts.Token;
+
+        Task.Factory.StartNew(
+            () => AcceptLoop(socket, cancellationToken),
+            cancellationToken,
+            TaskCreationOptions.LongRunning,
+            TaskScheduler.Default);
     }
 
     public void Stop()
