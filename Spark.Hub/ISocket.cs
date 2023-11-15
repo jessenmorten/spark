@@ -5,7 +5,7 @@ namespace Spark.Hub;
 
 public interface ISocket : IConnection
 {
-    void Bind(IPEndPoint endPoint); // TODO: IPEndPoint or just EndPoint?
+    void Bind(EndPoint endPoint);
     void Listen(int backlog);
     Task<ISocket> AcceptAsync(CancellationToken cancellationToken);
 }
