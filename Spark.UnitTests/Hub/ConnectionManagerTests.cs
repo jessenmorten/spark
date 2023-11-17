@@ -1,5 +1,4 @@
 using Spark.Hub;
-using NSubstitute;
 using Spark.InterfaceAdapters.Gateways;
 
 namespace Spark.UnitTests.Hub;

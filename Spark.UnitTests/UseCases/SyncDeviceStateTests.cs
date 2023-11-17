@@ -1,5 +1,4 @@
-﻿using NSubstitute;
-using System.Text;
+﻿using System.Text;
 using Spark.Entities;
 using Spark.UseCases;
 using Spark.UseCases.SyncDeviceState;

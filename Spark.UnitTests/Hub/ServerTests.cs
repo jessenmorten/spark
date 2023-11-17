@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Sockets;
-using NSubstitute;
 using Spark.Hub;
 using Spark.InterfaceAdapters.Gateways;
 
