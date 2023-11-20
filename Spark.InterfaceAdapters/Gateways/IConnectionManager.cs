@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Spark.Entities;
 
 namespace Spark.InterfaceAdapters.Gateways;
 
-public interface IConnectionManager
+public interface IConnectionManager<TEntityData> where TEntityData : IEntityData
 {
     int Count { get; }
-    void Add(IConnection connection);
-    bool TryGet(string connectionId, [NotNullWhen(returnValue: true)] out IConnection? connection);
+    void Add(IConnection<TEntityData> connection);
+    bool TryGet(string connectionId, [NotNullWhen(returnValue: true)] out IConnection<TEntityData>? connection);
 }
 

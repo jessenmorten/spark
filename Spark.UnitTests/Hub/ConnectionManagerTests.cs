@@ -1,3 +1,4 @@
+using Spark.Entities;
 using Spark.Hub;
 using Spark.InterfaceAdapters.Gateways;
 
@@ -5,11 +6,11 @@ namespace Spark.UnitTests.Hub;
 
 public class ConnectionManagerTests
 {
-    private readonly ConnectionManager _connectionManager;
+    private readonly ConnectionManager<ILightBulbData> _connectionManager;
 
     public ConnectionManagerTests()
     {
-        _connectionManager = new ConnectionManager();
+        _connectionManager = new ConnectionManager<ILightBulbData>();
     }
 
     [Fact]
@@ -22,7 +23,7 @@ public class ConnectionManagerTests
     public void AddThrowsWhenConnectionIsNull()
     {
         // Arrange
-        IConnection connection = null!;
+        IConnection<ILightBulbData> connection = null!;
 
         // Act
         var action = () => _connectionManager.Add(connection);
@@ -36,9 +37,9 @@ public class ConnectionManagerTests
     public void AddThrowsWhenAlreadyAdded()
     {
         // Arrange
-        var first = Substitute.For<ISocket>();
+        var first = Substitute.For<IConnection<ILightBulbData>>();
         first.Id.Returns("connection-id");
-        var second = Substitute.For<ISocket>();
+        var second = Substitute.For<IConnection<ILightBulbData>>();
         second.Id.Returns("connection-id");
         _connectionManager.Add(first);
 
@@ -54,9 +55,9 @@ public class ConnectionManagerTests
     public void AddIncreasesCount()
     {
         // Arrange
-        var first = Substitute.For<ISocket>();
+        var first = Substitute.For<IConnection<ILightBulbData>>();
         first.Id.Returns("1");
-        var second = Substitute.For<ISocket>();
+        var second = Substitute.For<IConnection<ILightBulbData>>();
         second.Id.Returns("2");
 
         // Act
@@ -85,16 +86,16 @@ public class ConnectionManagerTests
     public void TryGetReturnsTrue()
     {
         // Arrange
-        var socket = Substitute.For<ISocket>();
-        socket.Id.Returns("1");
-        _connectionManager.Add(socket);
+        var connection = Substitute.For<IConnection<ILightBulbData>>();
+        connection.Id.Returns("1");
+        _connectionManager.Add(connection);
 
         // Act
-        var found = _connectionManager.TryGet(socket.Id, out var outVal);
+        var found = _connectionManager.TryGet(connection.Id, out var outVal);
 
         // Assert
         Assert.True(found);
         Assert.NotNull(outVal);
-        Assert.Equal(socket, outVal);
+        Assert.Equal(connection, outVal);
     }
 }

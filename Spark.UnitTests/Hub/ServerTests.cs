@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using Spark.Entities;
 using Spark.Hub;
 using Spark.InterfaceAdapters.Gateways;
 
@@ -9,8 +10,9 @@ public class ServerTests
 {
     private readonly TimeSpan _acceptDelay = TimeSpan.FromMilliseconds(25);
     private readonly ServerOptions _options;
-    private readonly Server _server;
-    private readonly IConnectionManager _connectionManager;
+    private readonly Server<ILightBulbData> _server;
+    private readonly IConnectionManager<ILightBulbData> _connectionManager;
+    private readonly IConnectionFactory<ILightBulbData> _connectionFactory;
     private readonly ISocketFactory _socketFactory;
 
     public ServerTests()
@@ -21,10 +23,12 @@ public class ServerTests
             Backlog = 42
         };
         _socketFactory = Substitute.For<ISocketFactory>();
-        _connectionManager = Substitute.For<IConnectionManager>();
-        _server = new Server(
+        _connectionManager = Substitute.For<IConnectionManager<ILightBulbData>>();
+        _connectionFactory = Substitute.For<IConnectionFactory<ILightBulbData>>();
+        _server = new Server<ILightBulbData>(
             _options,
             _socketFactory,
+            _connectionFactory,
             _connectionManager);
     }
 
@@ -84,10 +88,14 @@ public class ServerTests
         // Arrange
         var serverSocket = Substitute.For<ISocket>();
         var clientSocket = Substitute.For<ISocket>();
+        var connection = Substitute.For<IConnection<ILightBulbData>>();
 
         _socketFactory
             .Create(_options.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
             .Returns(serverSocket);
+        _connectionFactory
+            .Create(clientSocket)
+            .Returns(connection);
         serverSocket
             .AcceptAsync(Arg.Any<CancellationToken>())
             .Returns(
@@ -99,7 +107,7 @@ public class ServerTests
         await Task.Delay(_acceptDelay);
 
         // Assert
-        _connectionManager.Received(1).Add(clientSocket);
+        _connectionManager.Received(1).Add(connection);
     }
 
     [Fact]
@@ -108,10 +116,14 @@ public class ServerTests
         // Arrange
         var serverSocket = Substitute.For<ISocket>();
         var clientSocket = Substitute.For<ISocket>();
+        var connection = Substitute.For<IConnection<ILightBulbData>>();
 
         _socketFactory
             .Create(_options.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
             .Returns(serverSocket);
+        _connectionFactory
+            .Create(clientSocket)
+            .Returns(connection);
         serverSocket
             .AcceptAsync(Arg.Any<CancellationToken>())
             .Returns(
@@ -124,7 +136,7 @@ public class ServerTests
         await Task.Delay(_acceptDelay);
 
         // Assert
-        _connectionManager.Received(1).Add(clientSocket);
+        _connectionManager.Received(1).Add(connection);
     }
 
     [Fact]
@@ -146,6 +158,6 @@ public class ServerTests
         _server.Start();
 
         // Assert
-        _connectionManager.Received(0).Add(Arg.Any<IConnection>());
+        _connectionManager.Received(0).Add(Arg.Any<IConnection<ILightBulbData>>());
     }
 }

@@ -1,16 +1,17 @@
-﻿using Spark.InterfaceAdapters.Gateways;
+﻿using Spark.Entities;
+using Spark.InterfaceAdapters.Gateways;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Spark.Hub;
 
-public class ConnectionManager : IConnectionManager
+public class ConnectionManager<TEntityData> : IConnectionManager<TEntityData> where TEntityData : IEntityData
 {
-    private readonly ConcurrentDictionary<string, IConnection> _connections = new();
+    private readonly ConcurrentDictionary<string, IConnection<TEntityData>> _connections = new();
 
     public int Count => _connections.Count;
 
-    public void Add(IConnection connection)
+    public void Add(IConnection<TEntityData> connection)
     {
         _ = connection ?? throw new ArgumentNullException(nameof(connection));
 
@@ -20,7 +21,7 @@ public class ConnectionManager : IConnectionManager
         }
     }
 
-    public bool TryGet(string connectionId, [NotNullWhen(true)] out IConnection? connection)
+    public bool TryGet(string connectionId, [NotNullWhen(true)] out IConnection<TEntityData>? connection)
     {
         var success = _connections.TryGetValue(connectionId, out var conn);
         connection = conn;

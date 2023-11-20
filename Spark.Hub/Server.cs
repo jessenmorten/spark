@@ -1,25 +1,34 @@
 ﻿using Spark.InterfaceAdapters.Gateways;
+using Spark.Entities;
 using System.Net.Sockets;
 
 namespace Spark.Hub;
 
-public class Server
+public interface IConnectionFactory<TEntityData> where TEntityData : IEntityData
+{
+    IConnection<TEntityData> Create(ISocket socket);
+}
+
+public class Server<TEntityData> where TEntityData : IEntityData
 {
     private readonly object _lock;
     private readonly ServerOptions _options;
     private readonly ISocketFactory _socketFactory;
-    private readonly IConnectionManager _connectionManager;
+    private readonly IConnectionFactory<TEntityData> _connectionFactory;
+    private readonly IConnectionManager<TEntityData> _connectionManager;
     private CancellationTokenSource? _cts;
 
     public Server(
         ServerOptions options,
         ISocketFactory socketFactory,
-        IConnectionManager socketList)
+        IConnectionFactory<TEntityData> connectionFactory,
+        IConnectionManager<TEntityData> connectionManager)
     {
         _lock = new();
         _options = options;
         _socketFactory = socketFactory;
-        _connectionManager = socketList;
+        _connectionFactory = connectionFactory;
+        _connectionManager = connectionManager;
     }
 
     public void Start()
@@ -79,7 +88,8 @@ public class Server
                     break;
                 }
 
-                _connectionManager.Add(client);
+                var connection = _connectionFactory.Create(client);
+                _connectionManager.Add(connection);
             }
             catch
             {
