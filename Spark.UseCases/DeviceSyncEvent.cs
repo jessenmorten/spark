@@ -1,3 +1,3 @@
 namespace Spark.UseCases;
 
-public record DeviceSyncEvent(Guid EntityId);
+public record DeviceSyncEvent(string EntityId);

@@ -2,11 +2,11 @@
 
 public class LightBulb : ILightBulb
 {
-    public Guid Id { get; }
+    public string Id { get; }
 
     public bool On { get; private set; }
 
-    public LightBulb(Guid id, bool on)
+    public LightBulb(string id, bool on)
     {
         Id = id;
         On = on;

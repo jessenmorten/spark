@@ -42,7 +42,7 @@ public class SyncDeviceStateTests
     public async Task UpdatesEntityInRepository()
     {
         // Arrange
-        var entity = new LightBulb(Guid.NewGuid(), on: false);
+        var entity = new LightBulb("light-id", on: false);
 
         // Act
         await _useCase.ExecuteAsync(entity, _cancellationToken);
@@ -55,7 +55,7 @@ public class SyncDeviceStateTests
     public async Task PublishesDeviceSyncEvent()
     {
         // Arrange
-        var entity = new LightBulb(Guid.NewGuid(), on: false);
+        var entity = new LightBulb("light-id", on: false);
 
         // Act
         await _useCase.ExecuteAsync(entity, _cancellationToken);
@@ -68,7 +68,7 @@ public class SyncDeviceStateTests
     public async Task DoesNotPublishWhenRepositoryThrows()
     {
         // Arrange
-        var entity = new LightBulb(Guid.NewGuid(), on: false);
+        var entity = new LightBulb("light-id", on: false);
         _repoMock.UpdateAsync(entity, _cancellationToken).Returns(Task.FromException(new Exception()));
 
         // Act

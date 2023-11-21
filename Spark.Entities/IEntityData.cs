@@ -2,5 +2,5 @@
 
 public interface IEntityData
 {
-    Guid Id { get; }
+    string Id { get; }
 }
