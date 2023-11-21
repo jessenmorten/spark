@@ -2,7 +2,7 @@
 
 namespace Spark.UseCases;
 
-public interface IRepository<TEntity, TEntityData> where TEntity : TEntityData where TEntityData : IEntityData
+public interface IRepository<TDevice, TDeviceData> where TDevice : TDeviceData where TDeviceData : IDeviceData
 {
-    Task UpdateAsync(TEntityData entity, CancellationToken cancellationToken);
+    Task UpdateAsync(TDeviceData deviceData, CancellationToken cancellationToken);
 }

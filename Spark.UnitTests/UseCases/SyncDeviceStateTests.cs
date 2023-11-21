@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Spark.Entities;
+using Spark.Entities.LightBulb;
 using Spark.UseCases;
 using Spark.UseCases.SyncDeviceState;
 
@@ -25,54 +26,54 @@ public class SyncDeviceStateTests
     }
 
     [Fact]
-    public async Task ThrowsIfEntityIsNull()
+    public async Task ThrowsIfDeviceIsNull()
     {
         // Arrange
-        ILightBulb entity = null!;
+        ILightBulb device = null!;
 
         // Act
-        var action = async () => await _useCase.ExecuteAsync(entity, _cancellationToken);
+        var action = async () => await _useCase.ExecuteAsync(device, _cancellationToken);
 
         // Assert
         var exception = await Assert.ThrowsAsync<ArgumentNullException>(action);
-        Assert.Equal("Value cannot be null. (Parameter 'entity')", exception.Message);
+        Assert.Equal("Value cannot be null. (Parameter 'device')", exception.Message);
     }
 
     [Fact]
-    public async Task UpdatesEntityInRepository()
+    public async Task UpdatesDeviceInRepository()
     {
         // Arrange
-        var entity = new LightBulb("light-id", on: false);
+        var device = new LightBulb("light-id", on: false);
 
         // Act
-        await _useCase.ExecuteAsync(entity, _cancellationToken);
+        await _useCase.ExecuteAsync(device, _cancellationToken);
 
         // Assert
-        await _repoMock.Received(1).UpdateAsync(entity, _cancellationToken);
+        await _repoMock.Received(1).UpdateAsync(device, _cancellationToken);
     }
 
     [Fact]
     public async Task PublishesDeviceSyncEvent()
     {
         // Arrange
-        var entity = new LightBulb("light-id", on: false);
+        var device = new LightBulb("light-id", on: false);
 
         // Act
-        await _useCase.ExecuteAsync(entity, _cancellationToken);
+        await _useCase.ExecuteAsync(device, _cancellationToken);
 
         // Assert
-        await _messageBrokerMock.Received(1).PublishAsync(Arg.Is<DeviceSyncEvent>(e => e.EntityId == entity.Id), _cancellationToken);
+        await _messageBrokerMock.Received(1).PublishAsync(Arg.Is<DeviceSyncEvent>(e => e.DeviceId == device.Id), _cancellationToken);
     }
 
     [Fact]
     public async Task DoesNotPublishWhenRepositoryThrows()
     {
         // Arrange
-        var entity = new LightBulb("light-id", on: false);
-        _repoMock.UpdateAsync(entity, _cancellationToken).Returns(Task.FromException(new Exception()));
+        var device = new LightBulb("light-id", on: false);
+        _repoMock.UpdateAsync(device, _cancellationToken).Returns(Task.FromException(new Exception()));
 
         // Act
-        var action = async () => await _useCase.ExecuteAsync(entity, _cancellationToken);
+        var action = async () => await _useCase.ExecuteAsync(device, _cancellationToken);
 
         // Assert
         await Assert.ThrowsAsync<Exception>(action);

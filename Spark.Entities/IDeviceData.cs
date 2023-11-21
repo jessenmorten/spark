@@ -1,6 +1,6 @@
 ﻿namespace Spark.Entities;
 
-public interface IEntityData
+public interface IDeviceData
 {
     string Id { get; }
 }

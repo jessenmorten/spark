@@ -3,9 +3,9 @@ using Spark.Entities;
 
 namespace Spark.InterfaceAdapters.Gateways;
 
-public interface IConnection<TEntityData> where TEntityData : IEntityData
+public interface IConnection<TDeviceData> where TDeviceData : IDeviceData
 {
     string Id { get; }
-    Task UpdateAsync(TEntityData entityData);
+    Task UpdateAsync(TDeviceData deviceData);
 }
 

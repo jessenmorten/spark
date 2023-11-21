@@ -2,24 +2,24 @@
 
 namespace Spark.UseCases.SyncDeviceState;
 
-public class SyncDeviceState<TEntity, TEntityData> where TEntity : TEntityData where TEntityData : IEntityData
+public class SyncDeviceState<TDevice, TDeviceData> where TDevice : TDeviceData where TDeviceData : IDeviceData
 {
-    private readonly IRepository<TEntity, TEntityData> _repository;
+    private readonly IRepository<TDevice, TDeviceData> _repository;
     private readonly IMessageBroker _messageBroker;
 
     public SyncDeviceState(
-        IRepository<TEntity, TEntityData> repository,
+        IRepository<TDevice, TDeviceData> repository,
         IMessageBroker eventBus)
     {
         _repository = repository;
         _messageBroker = eventBus;
     }
 
-    public async Task ExecuteAsync(TEntityData entity, CancellationToken cancellationToken)
+    public async Task ExecuteAsync(TDeviceData device, CancellationToken cancellationToken)
     {
-        _ = entity ?? throw new ArgumentNullException(nameof(entity));
-        await _repository.UpdateAsync(entity, cancellationToken);
-        var syncEvent = new DeviceSyncEvent(entity.Id);
+        _ = device ?? throw new ArgumentNullException(nameof(device));
+        await _repository.UpdateAsync(device, cancellationToken);
+        var syncEvent = new DeviceSyncEvent(device.Id);
         await _messageBroker.PublishAsync(syncEvent, cancellationToken);
     }
 }

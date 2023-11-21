@@ -1,4 +1,4 @@
-﻿namespace Spark.Entities;
+﻿namespace Spark.Entities.LightBulb;
 
 public class LightBulb : ILightBulb
 {

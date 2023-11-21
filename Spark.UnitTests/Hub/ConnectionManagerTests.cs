@@ -1,4 +1,5 @@
 using Spark.Entities;
+using Spark.Entities.LightBulb;
 using Spark.Hub;
 using Spark.InterfaceAdapters.Gateways;
 

@@ -5,13 +5,13 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Spark.Hub;
 
-public class ConnectionManager<TEntityData> : IConnectionManager<TEntityData> where TEntityData : IEntityData
+public class ConnectionManager<TDeviceData> : IConnectionManager<TDeviceData> where TDeviceData : IDeviceData
 {
-    private readonly ConcurrentDictionary<string, IConnection<TEntityData>> _connections = new();
+    private readonly ConcurrentDictionary<string, IConnection<TDeviceData>> _connections = new();
 
     public int Count => _connections.Count;
 
-    public void Add(IConnection<TEntityData> connection)
+    public void Add(IConnection<TDeviceData> connection)
     {
         _ = connection ?? throw new ArgumentNullException(nameof(connection));
 
@@ -21,7 +21,7 @@ public class ConnectionManager<TEntityData> : IConnectionManager<TEntityData> wh
         }
     }
 
-    public bool TryGet(string connectionId, [NotNullWhen(true)] out IConnection<TEntityData>? connection)
+    public bool TryGet(string connectionId, [NotNullWhen(true)] out IConnection<TDeviceData>? connection)
     {
         var success = _connections.TryGetValue(connectionId, out var conn);
         connection = conn;

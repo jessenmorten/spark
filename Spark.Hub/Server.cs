@@ -4,25 +4,25 @@ using System.Net.Sockets;
 
 namespace Spark.Hub;
 
-public interface IConnectionFactory<TEntityData> where TEntityData : IEntityData
+public interface IConnectionFactory<TDeviceData> where TDeviceData : IDeviceData
 {
-    IConnection<TEntityData> Create(ISocket socket);
+    IConnection<TDeviceData> Create(ISocket socket);
 }
 
-public class Server<TEntityData> where TEntityData : IEntityData
+public class Server<TDeviceData> where TDeviceData : IDeviceData
 {
     private readonly object _lock;
     private readonly ServerOptions _options;
     private readonly ISocketFactory _socketFactory;
-    private readonly IConnectionFactory<TEntityData> _connectionFactory;
-    private readonly IConnectionManager<TEntityData> _connectionManager;
+    private readonly IConnectionFactory<TDeviceData> _connectionFactory;
+    private readonly IConnectionManager<TDeviceData> _connectionManager;
     private CancellationTokenSource? _cts;
 
     public Server(
         ServerOptions options,
         ISocketFactory socketFactory,
-        IConnectionFactory<TEntityData> connectionFactory,
-        IConnectionManager<TEntityData> connectionManager)
+        IConnectionFactory<TDeviceData> connectionFactory,
+        IConnectionManager<TDeviceData> connectionManager)
     {
         _lock = new();
         _options = options;
