@@ -4,11 +4,6 @@ using System.Net.Sockets;
 
 namespace Spark.Hub;
 
-public interface IConnectionFactory<TDeviceData> where TDeviceData : IDeviceData
-{
-    IConnection<TDeviceData> Create(ISocket socket);
-}
-
 public class Server<TDeviceData> where TDeviceData : IDeviceData
 {
     private readonly object _lock;

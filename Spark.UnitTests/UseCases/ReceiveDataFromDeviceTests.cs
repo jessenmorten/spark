@@ -2,25 +2,25 @@
 using Spark.Entities;
 using Spark.Entities.LightBulb;
 using Spark.UseCases;
-using Spark.UseCases.SyncDeviceState;
+using Spark.UseCases.ReceiveDataFromDevice;
 
 namespace Spark.UnitTests.UseCases;
 
-public class SyncDeviceStateTests
+public class ReceiveDataFromDeviceTests
 {
     private readonly CancellationTokenSource _cancellationTokenSource;
     private readonly CancellationToken _cancellationToken;
-    private readonly SyncDeviceState<ILightBulb, ILightBulbData> _useCase;
+    private readonly ReceiveDataFromDevice<ILightBulb, ILightBulbData> _useCase;
     private readonly IRepository<ILightBulb, ILightBulbData> _repoMock;
     private readonly IMessageBroker _messageBrokerMock;
 
-    public SyncDeviceStateTests()
+    public ReceiveDataFromDeviceTests()
     {
         _cancellationTokenSource = new CancellationTokenSource();
         _cancellationToken = _cancellationTokenSource.Token;
         _repoMock = Substitute.For<IRepository<ILightBulb, ILightBulbData>>();
         _messageBrokerMock = Substitute.For<IMessageBroker>();
-        _useCase = new SyncDeviceState<ILightBulb, ILightBulbData>(
+        _useCase = new ReceiveDataFromDevice<ILightBulb, ILightBulbData>(
             _repoMock,
             _messageBrokerMock);
     }
@@ -53,7 +53,7 @@ public class SyncDeviceStateTests
     }
 
     [Fact]
-    public async Task PublishesDeviceSyncEvent()
+    public async Task PublishesDeviceDataReceived()
     {
         // Arrange
         var device = new LightBulb("light-id", on: false);
@@ -62,7 +62,7 @@ public class SyncDeviceStateTests
         await _useCase.ExecuteAsync(device, _cancellationToken);
 
         // Assert
-        await _messageBrokerMock.Received(1).PublishAsync(Arg.Is<DeviceSyncEvent>(e => e.DeviceId == device.Id), _cancellationToken);
+        await _messageBrokerMock.Received(1).PublishAsync(Arg.Is<DeviceDataReceived>(e => e.DeviceId == device.Id), _cancellationToken);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class SyncDeviceStateTests
 
         // Assert
         await Assert.ThrowsAsync<Exception>(action);
-        await _messageBrokerMock.DidNotReceive().PublishAsync(Arg.Any<DeviceSyncEvent>(), _cancellationToken);
+        await _messageBrokerMock.DidNotReceive().PublishAsync(Arg.Any<DeviceDataReceived>(), _cancellationToken);
     }
 }
 

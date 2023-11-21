@@ -1,13 +1,13 @@
 ﻿using Spark.Entities;
 
-namespace Spark.UseCases.SyncDeviceState;
+namespace Spark.UseCases.ReceiveDataFromDevice;
 
-public class SyncDeviceState<TDevice, TDeviceData> where TDevice : TDeviceData where TDeviceData : IDeviceData
+public class ReceiveDataFromDevice<TDevice, TDeviceData> where TDevice : TDeviceData where TDeviceData : IDeviceData
 {
     private readonly IRepository<TDevice, TDeviceData> _repository;
     private readonly IMessageBroker _messageBroker;
 
-    public SyncDeviceState(
+    public ReceiveDataFromDevice(
         IRepository<TDevice, TDeviceData> repository,
         IMessageBroker eventBus)
     {
@@ -19,7 +19,7 @@ public class SyncDeviceState<TDevice, TDeviceData> where TDevice : TDeviceData w
     {
         _ = device ?? throw new ArgumentNullException(nameof(device));
         await _repository.UpdateAsync(device, cancellationToken);
-        var syncEvent = new DeviceSyncEvent(device.Id);
-        await _messageBroker.PublishAsync(syncEvent, cancellationToken);
+        var message = new DeviceDataReceived(device.Id);
+        await _messageBroker.PublishAsync(message, cancellationToken);
     }
 }
