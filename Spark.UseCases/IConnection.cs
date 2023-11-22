@@ -1,11 +1,9 @@
-﻿using System.Net.Sockets;
 using Spark.Entities;
 
-namespace Spark.InterfaceAdapters.Gateways;
+namespace Spark.UseCases;
 
 public interface IConnection<TDeviceData> where TDeviceData : IDeviceData
 {
-    string Id { get; }
+    string DeviceId { get; }
     Task UpdateAsync(TDeviceData deviceData);
 }
-

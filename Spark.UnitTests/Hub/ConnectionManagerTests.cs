@@ -1,7 +1,7 @@
 using Spark.Entities;
 using Spark.Entities.LightBulb;
 using Spark.Hub;
-using Spark.InterfaceAdapters.Gateways;
+using Spark.UseCases;
 
 namespace Spark.UnitTests.Hub;
 
@@ -39,9 +39,9 @@ public class ConnectionManagerTests
     {
         // Arrange
         var first = Substitute.For<IConnection<ILightBulbData>>();
-        first.Id.Returns("connection-id");
+        first.DeviceId.Returns("device-id");
         var second = Substitute.For<IConnection<ILightBulbData>>();
-        second.Id.Returns("connection-id");
+        second.DeviceId.Returns("device-id");
         _connectionManager.Add(first);
 
         // Act
@@ -49,7 +49,7 @@ public class ConnectionManagerTests
 
         // Assert
         var message = Assert.Throws<InvalidOperationException>(action);
-        Assert.Equal("Connection already added, id: connection-id", message.Message);
+        Assert.Equal("Connection already added, device id: device-id", message.Message);
     }
 
     [Fact]
@@ -57,9 +57,9 @@ public class ConnectionManagerTests
     {
         // Arrange
         var first = Substitute.For<IConnection<ILightBulbData>>();
-        first.Id.Returns("1");
+        first.DeviceId.Returns("1");
         var second = Substitute.For<IConnection<ILightBulbData>>();
-        second.Id.Returns("2");
+        second.DeviceId.Returns("2");
 
         // Act
         _connectionManager.Add(first);
@@ -73,7 +73,7 @@ public class ConnectionManagerTests
     public void TryGetReturnsFalse()
     {
         // Arrange
-        var id = "connection-id";
+        var id = "device-id";
 
         // Act
         var found = _connectionManager.TryGet(id, out var outVal);
@@ -88,11 +88,11 @@ public class ConnectionManagerTests
     {
         // Arrange
         var connection = Substitute.For<IConnection<ILightBulbData>>();
-        connection.Id.Returns("1");
+        connection.DeviceId.Returns("1");
         _connectionManager.Add(connection);
 
         // Act
-        var found = _connectionManager.TryGet(connection.Id, out var outVal);
+        var found = _connectionManager.TryGet(connection.DeviceId, out var outVal);
 
         // Assert
         Assert.True(found);

@@ -1,5 +1,5 @@
 ﻿using Spark.Entities;
-using Spark.InterfaceAdapters.Gateways;
+using Spark.UseCases;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
@@ -15,15 +15,15 @@ public class ConnectionManager<TDeviceData> : IConnectionManager<TDeviceData> wh
     {
         _ = connection ?? throw new ArgumentNullException(nameof(connection));
 
-        if (!_connections.TryAdd(connection.Id, connection))
+        if (!_connections.TryAdd(connection.DeviceId, connection))
         {
-            throw new InvalidOperationException($"Connection already added, id: {connection.Id}");
+            throw new InvalidOperationException($"Connection already added, device id: {connection.DeviceId}");
         }
     }
 
-    public bool TryGet(string connectionId, [NotNullWhen(true)] out IConnection<TDeviceData>? connection)
+    public bool TryGet(string deviceId, [NotNullWhen(true)] out IConnection<TDeviceData>? connection)
     {
-        var success = _connections.TryGetValue(connectionId, out var conn);
+        var success = _connections.TryGetValue(deviceId, out var conn);
         connection = conn;
         return success;
     }

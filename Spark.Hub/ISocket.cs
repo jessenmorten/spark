@@ -1,5 +1,4 @@
-﻿using Spark.InterfaceAdapters.Gateways;
-using System.Net;
+﻿using System.Net;
 
 namespace Spark.Hub;
 

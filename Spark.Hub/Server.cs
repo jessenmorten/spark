@@ -1,12 +1,14 @@
-﻿using Spark.InterfaceAdapters.Gateways;
-using Spark.Entities;
+﻿using Spark.Entities;
+using Spark.UseCases;
 using System.Net.Sockets;
+using System.Threading.Channels;
 
 namespace Spark.Hub;
 
 public class Server<TDeviceData> where TDeviceData : IDeviceData
 {
     private readonly object _lock;
+    private readonly Channel<IUninitializedConnection<TDeviceData>> _channel;
     private readonly ServerOptions _options;
     private readonly ISocketFactory _socketFactory;
     private readonly IConnectionFactory<TDeviceData> _connectionFactory;
@@ -20,6 +22,7 @@ public class Server<TDeviceData> where TDeviceData : IDeviceData
         IConnectionManager<TDeviceData> connectionManager)
     {
         _lock = new();
+        _channel = Channel.CreateUnbounded<IUninitializedConnection<TDeviceData>>();
         _options = options;
         _socketFactory = socketFactory;
         _connectionFactory = connectionFactory;
@@ -47,6 +50,12 @@ public class Server<TDeviceData> where TDeviceData : IDeviceData
         socket.Listen(_options.Backlog);
 
         var cancellationToken = _cts.Token;
+
+        Task.Factory.StartNew(
+            () => InitializeConnectionLoop(cancellationToken),
+            cancellationToken,
+            TaskCreationOptions.LongRunning,
+            TaskScheduler.Default);
 
         Task.Factory.StartNew(
             () => AcceptLoop(socket, cancellationToken),
@@ -83,7 +92,24 @@ public class Server<TDeviceData> where TDeviceData : IDeviceData
                     break;
                 }
 
-                var connection = _connectionFactory.Create(client);
+                _channel.Writer.TryWrite(_connectionFactory.Create(client));
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+    }
+
+    private async Task InitializeConnectionLoop(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            var uninitializedConnection = await _channel.Reader.ReadAsync(cancellationToken);
+
+            try
+            {
+                var connection = await uninitializedConnection.InitializeAsync(cancellationToken);
                 _connectionManager.Add(connection);
             }
             catch

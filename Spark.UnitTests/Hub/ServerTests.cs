@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using Spark.Entities;
 using Spark.Entities.LightBulb;
 using Spark.Hub;
-using Spark.InterfaceAdapters.Gateways;
+using Spark.UseCases;
 
 namespace Spark.UnitTests.Hub;
 
@@ -89,14 +89,18 @@ public class ServerTests
         // Arrange
         var serverSocket = Substitute.For<ISocket>();
         var clientSocket = Substitute.For<ISocket>();
+        var uninitializedConnection = Substitute.For<IUninitializedConnection<ILightBulbData>>();
         var connection = Substitute.For<IConnection<ILightBulbData>>();
 
+        uninitializedConnection
+            .InitializeAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(connection));
         _socketFactory
             .Create(_options.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
             .Returns(serverSocket);
         _connectionFactory
             .Create(clientSocket)
-            .Returns(connection);
+            .Returns(uninitializedConnection);
         serverSocket
             .AcceptAsync(Arg.Any<CancellationToken>())
             .Returns(
@@ -117,14 +121,18 @@ public class ServerTests
         // Arrange
         var serverSocket = Substitute.For<ISocket>();
         var clientSocket = Substitute.For<ISocket>();
+        var uninitializedConnection = Substitute.For<IUninitializedConnection<ILightBulbData>>();
         var connection = Substitute.For<IConnection<ILightBulbData>>();
 
+        uninitializedConnection
+            .InitializeAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(connection));
         _socketFactory
             .Create(_options.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
             .Returns(serverSocket);
         _connectionFactory
             .Create(clientSocket)
-            .Returns(connection);
+            .Returns(uninitializedConnection);
         serverSocket
             .AcceptAsync(Arg.Any<CancellationToken>())
             .Returns(

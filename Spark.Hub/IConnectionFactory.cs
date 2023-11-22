@@ -1,10 +1,10 @@
-using Spark.InterfaceAdapters.Gateways;
 using Spark.Entities;
+using Spark.UseCases;
 
 namespace Spark.Hub;
 
 public interface IConnectionFactory<TDeviceData> where TDeviceData : IDeviceData
 {
-    IConnection<TDeviceData> Create(ISocket socket);
+    IUninitializedConnection<TDeviceData> Create(ISocket socket);
 }
 
