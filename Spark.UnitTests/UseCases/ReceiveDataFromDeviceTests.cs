@@ -10,7 +10,7 @@ public class ReceiveDataFromDeviceTests
 {
     private readonly CancellationTokenSource _cancellationTokenSource;
     private readonly CancellationToken _cancellationToken;
-    private readonly ReceiveDataFromDevice<ILightBulb, ILightBulbData> _useCase;
+    private readonly IUseCase<ILightBulbData, ILightBulbData> _useCase;
     private readonly IRepository<ILightBulb, ILightBulbData> _repoMock;
     private readonly IMessageBroker _messageBrokerMock;
 
@@ -36,7 +36,7 @@ public class ReceiveDataFromDeviceTests
 
         // Assert
         var exception = await Assert.ThrowsAsync<ArgumentNullException>(action);
-        Assert.Equal("Value cannot be null. (Parameter 'device')", exception.Message);
+        Assert.Equal("Value cannot be null. (Parameter 'request')", exception.Message);
     }
 
     [Fact]

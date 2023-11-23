@@ -2,7 +2,7 @@
 
 namespace Spark.UseCases.ReceiveDataFromDevice;
 
-public class ReceiveDataFromDevice<TDevice, TDeviceData> where TDevice : TDeviceData where TDeviceData : IDeviceData
+public class ReceiveDataFromDevice<TDevice, TDeviceData> : IUseCase<TDeviceData, TDeviceData> where TDevice : TDeviceData where TDeviceData : IDeviceData
 {
     private readonly IRepository<TDevice, TDeviceData> _repository;
     private readonly IMessageBroker _messageBroker;
@@ -15,11 +15,12 @@ public class ReceiveDataFromDevice<TDevice, TDeviceData> where TDevice : TDevice
         _messageBroker = eventBus;
     }
 
-    public async Task ExecuteAsync(TDeviceData device, CancellationToken cancellationToken)
+    public async Task<TDeviceData> ExecuteAsync(TDeviceData request, CancellationToken cancellationToken)
     {
-        _ = device ?? throw new ArgumentNullException(nameof(device));
-        await _repository.UpdateAsync(device, cancellationToken);
-        var message = new DeviceDataReceived(device.Id);
+        _ = request ?? throw new ArgumentNullException(nameof(request));
+        await _repository.UpdateAsync(request, cancellationToken);
+        var message = new DeviceDataReceived(request.Id);
         await _messageBroker.PublishAsync(message, cancellationToken);
+        return request;
     }
 }

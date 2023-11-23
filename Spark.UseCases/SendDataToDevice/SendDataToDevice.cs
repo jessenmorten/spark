@@ -3,7 +3,7 @@ using Spark.Entities;
 
 namespace Spark.UseCases.SendDataToDevice;
 
-public class SendDataToDevice<TDeviceData> where TDeviceData : IDeviceData
+public class SendDataToDevice<TDeviceData> : IUseCase<TDeviceData, TDeviceData> where TDeviceData : IDeviceData
 {
     private readonly IConnectionManager<TDeviceData> _connectionManager;
 
@@ -12,11 +12,15 @@ public class SendDataToDevice<TDeviceData> where TDeviceData : IDeviceData
         _connectionManager = connectionManager;
     }
 
-    public async Task ExecuteAsync(TDeviceData deviceData, CancellationToken cancellationToken)
+    public async Task<TDeviceData> ExecuteAsync(TDeviceData request, CancellationToken cancellationToken)
     {
-        if (_connectionManager.TryGet(deviceData.Id, out var connection))
+        _ = request ?? throw new ArgumentNullException(nameof(request));
+
+        if (_connectionManager.TryGet(request.Id, out var connection))
         {
-            await connection.UpdateAsync(deviceData, cancellationToken);
+            await connection.UpdateAsync(request, cancellationToken);
         }
+
+        return request;
     }
 }

@@ -10,7 +10,7 @@ namespace Spark.UnitTests.UseCases;
 public class SendDataToDeviceTests
 {
     private readonly CancellationToken _cancellationToken;
-    private readonly SendDataToDevice<ILightBulbData> _useCase;
+    private readonly IUseCase<ILightBulbData, ILightBulbData> _useCase;
     private readonly IConnectionManager<ILightBulbData> _connectionManager;
 
     public SendDataToDeviceTests()
@@ -19,6 +19,20 @@ public class SendDataToDeviceTests
         _cancellationToken = cts.Token;
         _connectionManager = new ConnectionManager<ILightBulbData>();
         _useCase = new SendDataToDevice<ILightBulbData>(_connectionManager);
+    }
+
+    [Fact]
+    public async Task ThrowsIfDeviceIsNull()
+    {
+        // Arrange
+        ILightBulb device = null!;
+
+        // Act
+        var action = async () => await _useCase.ExecuteAsync(device, _cancellationToken);
+
+        // Assert
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(action);
+        Assert.Equal("Value cannot be null. (Parameter 'request')", exception.Message);
     }
 
     [Fact]
