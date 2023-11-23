@@ -15,6 +15,6 @@ public class DeviceDataChangedConsumer<TDeviceData> where TDeviceData : IDeviceD
 
     public async Task ConsumeAsync(DeviceDataChanged<TDeviceData> message, CancellationToken cancellationToken)
     {
-        await _sendDataToDevice.ExecuteAsync(message.DeviceData);
+        await _sendDataToDevice.ExecuteAsync(message.DeviceData, cancellationToken);
     }
 }

@@ -12,11 +12,11 @@ public class SendDataToDevice<TDeviceData> where TDeviceData : IDeviceData
         _connectionManager = connectionManager;
     }
 
-    public async Task ExecuteAsync(TDeviceData deviceData)
+    public async Task ExecuteAsync(TDeviceData deviceData, CancellationToken cancellationToken)
     {
         if (_connectionManager.TryGet(deviceData.Id, out var connection))
         {
-            await connection.UpdateAsync(deviceData);
+            await connection.UpdateAsync(deviceData, cancellationToken);
         }
     }
 }

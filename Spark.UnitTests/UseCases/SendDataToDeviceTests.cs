@@ -9,11 +9,14 @@ namespace Spark.UnitTests.UseCases;
 
 public class SendDataToDeviceTests
 {
+    private readonly CancellationToken _cancellationToken;
     private readonly SendDataToDevice<ILightBulbData> _useCase;
     private readonly IConnectionManager<ILightBulbData> _connectionManager;
 
     public SendDataToDeviceTests()
     {
+        var cts = new CancellationTokenSource(1000);
+        _cancellationToken = cts.Token;
         _connectionManager = new ConnectionManager<ILightBulbData>();
         _useCase = new SendDataToDevice<ILightBulbData>(_connectionManager);
     }
@@ -26,7 +29,7 @@ public class SendDataToDeviceTests
         deviceData.Id.Returns("device-id");
 
         // Act
-        var action = () => _useCase.ExecuteAsync(deviceData);
+        var action = () => _useCase.ExecuteAsync(deviceData, CancellationToken.None);
 
         // Assert
         await action();
@@ -43,9 +46,9 @@ public class SendDataToDeviceTests
         _connectionManager.Add(connection);
 
         // Act
-        await _useCase.ExecuteAsync(deviceData);
+        await _useCase.ExecuteAsync(deviceData, _cancellationToken);
 
         // Assert
-        await connection.Received(1).UpdateAsync(deviceData);
+        await connection.Received(1).UpdateAsync(deviceData, _cancellationToken);
     }
 }
