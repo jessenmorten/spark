@@ -15,10 +15,12 @@ public class ConnectionManager<TDeviceData> : IConnectionManager<TDeviceData> wh
     {
         _ = connection ?? throw new ArgumentNullException(nameof(connection));
 
-        if (!_connections.TryAdd(connection.DeviceId, connection))
+        if (_connections.TryRemove(connection.DeviceId, out var oldConnection))
         {
-            throw new InvalidOperationException($"Connection already added, device id: {connection.DeviceId}");
+            oldConnection.Close();
         }
+
+        _connections[connection.DeviceId] = connection;
     }
 
     public bool TryGet(string deviceId, [NotNullWhen(true)] out IConnection<TDeviceData>? connection)

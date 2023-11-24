@@ -35,7 +35,7 @@ public class ConnectionManagerTests
     }
 
     [Fact]
-    public void AddThrowsWhenAlreadyAdded()
+    public void AddClosesOldConnectionOnReconnect()
     {
         // Arrange
         var first = Substitute.For<IConnection<ILightBulbData>>();
@@ -45,11 +45,10 @@ public class ConnectionManagerTests
         _connectionManager.Add(first);
 
         // Act
-        var action = () => _connectionManager.Add(second);
+        _connectionManager.Add(second);
 
         // Assert
-        var message = Assert.Throws<InvalidOperationException>(action);
-        Assert.Equal("Connection already added, device id: device-id", message.Message);
+        first.Received(1).Close();
     }
 
     [Fact]
