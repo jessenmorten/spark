@@ -5,7 +5,7 @@ namespace Spark.Hub;
 
 public class SocketWrapper : ISocket
 {
-    private Socket _socket;
+    private Socket? _socket;
 
     public SocketWrapper(Socket socket)
     {
@@ -26,7 +26,7 @@ public class SocketWrapper : ISocket
     {
         GetSocket().Close();
         GetSocket().Dispose();
-        _socket = null!;
+        _socket = null;
     }
 
     public async Task<ISocket> AcceptAsync(CancellationToken cancellationToken)
