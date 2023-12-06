@@ -4,7 +4,7 @@ using Spark.UseCases.SendDataToDevice;
 
 namespace Spark.InterfaceAdapters.Consumers;
 
-public class DeviceDataChangedConsumer<TDeviceData> where TDeviceData : IDeviceData
+public class DeviceDataChangedConsumer<TDeviceData> : IConsumer<DeviceDataChanged<TDeviceData>> where TDeviceData : IDeviceData
 {
     private readonly SendDataToDevice<TDeviceData> _sendDataToDevice;
 
