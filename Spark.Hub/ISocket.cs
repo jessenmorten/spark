@@ -8,5 +8,6 @@ public interface ISocket
     void Listen(int backlog);
     void Close();
     Task<ISocket> AcceptAsync(CancellationToken cancellationToken);
+    Task<int> ReceiveAsync(Memory<byte> buffer, CancellationToken cancellationToken);
 }
 

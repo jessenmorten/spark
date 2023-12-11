@@ -29,6 +29,11 @@ public class SocketWrapper : ISocket
         _socket = null;
     }
 
+    public async Task<int> ReceiveAsync(Memory<byte> buffer, CancellationToken cancellationToken)
+    {
+        return await GetSocket().ReceiveAsync(buffer, SocketFlags.None, cancellationToken);
+    }
+
     public async Task<ISocket> AcceptAsync(CancellationToken cancellationToken)
     {
         var socket = await GetSocket().AcceptAsync();
