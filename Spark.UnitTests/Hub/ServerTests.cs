@@ -12,6 +12,7 @@ public class ServerTests
     private readonly TimeSpan _acceptDelay = TimeSpan.FromMilliseconds(25);
     private readonly ServerOptions _options;
     private readonly Server<ILightBulbData> _server;
+    private readonly ILogger _logger;
     private readonly IConnectionManager<ILightBulbData> _connectionManager;
     private readonly IConnectionFactory<ILightBulbData> _connectionFactory;
     private readonly ISocketFactory _socketFactory;
@@ -23,10 +24,12 @@ public class ServerTests
             EndPoint = IPEndPoint.Parse("127.0.0.1:8080"),
             Backlog = 42
         };
+        _logger = Substitute.For<ILogger>();
         _socketFactory = Substitute.For<ISocketFactory>();
         _connectionManager = Substitute.For<IConnectionManager<ILightBulbData>>();
         _connectionFactory = Substitute.For<IConnectionFactory<ILightBulbData>>();
         _server = new Server<ILightBulbData>(
+            _logger,
             _options,
             _socketFactory,
             _connectionFactory,

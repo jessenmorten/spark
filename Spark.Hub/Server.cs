@@ -9,6 +9,7 @@ public class Server<TDeviceData> where TDeviceData : IDeviceData
 {
     private readonly object _lock;
     private readonly Channel<IUninitializedConnection<TDeviceData>> _channel;
+    private readonly ILogger _logger;
     private readonly ServerOptions _options;
     private readonly ISocketFactory _socketFactory;
     private readonly IConnectionFactory<TDeviceData> _connectionFactory;
@@ -16,6 +17,7 @@ public class Server<TDeviceData> where TDeviceData : IDeviceData
     private CancellationTokenSource? _cts;
 
     public Server(
+        ILogger logger,
         ServerOptions options,
         ISocketFactory socketFactory,
         IConnectionFactory<TDeviceData> connectionFactory,
@@ -23,6 +25,7 @@ public class Server<TDeviceData> where TDeviceData : IDeviceData
     {
         _lock = new();
         _channel = Channel.CreateUnbounded<IUninitializedConnection<TDeviceData>>();
+        _logger = logger;
         _options = options;
         _socketFactory = socketFactory;
         _connectionFactory = connectionFactory;
@@ -48,6 +51,7 @@ public class Server<TDeviceData> where TDeviceData : IDeviceData
 
         socket.Bind(_options.EndPoint);
         socket.Listen(_options.Backlog);
+        _logger.Info("Listening on {0}", _options.EndPoint);
 
         var cancellationToken = _cts.Token;
 
@@ -94,9 +98,9 @@ public class Server<TDeviceData> where TDeviceData : IDeviceData
 
                 _channel.Writer.TryWrite(_connectionFactory.Create(client));
             }
-            catch
+            catch (Exception ex)
             {
-                // ignore
+                _logger.Error("Failed to accept client", ex);
             }
         }
     }
@@ -112,9 +116,9 @@ public class Server<TDeviceData> where TDeviceData : IDeviceData
                 var connection = await uninitializedConnection.InitializeAsync(cancellationToken);
                 _connectionManager.Add(connection);
             }
-            catch
+            catch (Exception ex)
             {
-                // ignore
+                _logger.Error("Failed to initialize connection", ex);
             }
         }
     }
