@@ -1,6 +1,4 @@
-﻿using System.Text;
-using Spark.Entities;
-using Spark.Entities.LightBulb;
+﻿using Spark.Entities.LightBulb;
 using Spark.UseCases;
 using Spark.UseCases.ReceiveDataFromDevice;
 
@@ -12,14 +10,14 @@ public class ReceiveDataFromDeviceTests
     private readonly CancellationToken _cancellationToken;
     private readonly IUseCase<ILightBulbData, ILightBulbData> _useCase;
     private readonly IRepository<ILightBulb, ILightBulbData> _repoMock;
-    private readonly IMessageBroker _messageBrokerMock;
+    private readonly IMessageBroker<ILightBulbData> _messageBrokerMock;
 
     public ReceiveDataFromDeviceTests()
     {
         _cancellationTokenSource = new CancellationTokenSource();
         _cancellationToken = _cancellationTokenSource.Token;
         _repoMock = Substitute.For<IRepository<ILightBulb, ILightBulbData>>();
-        _messageBrokerMock = Substitute.For<IMessageBroker>();
+        _messageBrokerMock = Substitute.For<IMessageBroker<ILightBulbData>>();
         _useCase = new ReceiveDataFromDevice<ILightBulb, ILightBulbData>(
             _repoMock,
             _messageBrokerMock);
