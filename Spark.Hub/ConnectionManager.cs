@@ -7,19 +7,44 @@ namespace Spark.Hub;
 
 public class ConnectionManager<TDeviceData> : IConnectionManager<TDeviceData> where TDeviceData : IDeviceData
 {
+    private readonly object _lock = new();
+    private CancellationTokenSource? _cts;
     private readonly ConcurrentDictionary<string, IConnection<TDeviceData>> _connections = new();
 
     public int Count => _connections.Count;
 
-    public ConnectionManager()
+    public void Start()
     {
-        var cancellationToken = CancellationToken.None; // TODO
+        lock (_lock)
+        {
+            if (_cts is not null)
+            {
+                throw new InvalidOperationException("ConnectionManager is already started");
+            }
 
+            _cts = new CancellationTokenSource();
+        }
+
+        var token = _cts.Token;
         Task.Factory.StartNew(
-            () => CloseUnhealthyConnectionsLoop(cancellationToken),
-            cancellationToken,
+            () => CloseUnhealthyConnectionsLoop(token),
+            token,
             TaskCreationOptions.LongRunning,
             TaskScheduler.Default);
+    }
+
+    public void Stop()
+    {
+        lock (_lock)
+        {
+            if (_cts is null)
+            {
+                throw new InvalidOperationException("ConnectionManager is not started");
+            }
+
+            _cts.Cancel();
+            _cts = null;
+        }
     }
 
     public void Add(IConnection<TDeviceData> connection)
