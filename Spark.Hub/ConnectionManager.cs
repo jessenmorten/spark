@@ -44,12 +44,32 @@ public class ConnectionManager<TDeviceData> : IConnectionManager<TDeviceData> wh
 
             _cts.Cancel();
             _cts = null;
+            var connections = _connections.Values.ToArray();
+            _connections.Clear();
+            foreach (var connection in connections)
+            {
+                try
+                {
+                    connection.Close();
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
         }
     }
 
     public void Add(IConnection<TDeviceData> connection)
     {
         _ = connection ?? throw new ArgumentNullException(nameof(connection));
+        lock (_lock)
+        {
+            if (_cts is null)
+            {
+                throw new InvalidOperationException("ConnectionManager is not started");
+            }
+        }
 
         if (_connections.TryRemove(connection.DeviceId, out var oldConnection))
         {
@@ -61,6 +81,14 @@ public class ConnectionManager<TDeviceData> : IConnectionManager<TDeviceData> wh
 
     public bool TryGet(string deviceId, [NotNullWhen(true)] out IConnection<TDeviceData>? connection)
     {
+        lock (_lock)
+        {
+            if (_cts is null)
+            {
+                throw new InvalidOperationException("ConnectionManager is not started");
+            }
+        }
+
         var success = _connections.TryGetValue(deviceId, out var conn);
         connection = conn;
         return success;
