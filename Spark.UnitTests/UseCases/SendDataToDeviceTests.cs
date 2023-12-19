@@ -19,6 +19,7 @@ public class SendDataToDeviceTests
         _cancellationToken = cts.Token;
         _connectionManager = new ConnectionManager<ILightBulbData>();
         _useCase = new SendDataToDevice<ILightBulbData>(_connectionManager);
+        _connectionManager.Start();
     }
 
     [Fact]

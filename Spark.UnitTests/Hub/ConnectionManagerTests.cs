@@ -42,6 +42,7 @@ public class ConnectionManagerTests
         first.DeviceId.Returns("device-id");
         var second = Substitute.For<IConnection<ILightBulbData>>();
         second.DeviceId.Returns("device-id");
+        _connectionManager.Start();
         _connectionManager.Add(first);
 
         // Act
@@ -59,6 +60,7 @@ public class ConnectionManagerTests
         first.DeviceId.Returns("1");
         var second = Substitute.For<IConnection<ILightBulbData>>();
         second.DeviceId.Returns("2");
+        _connectionManager.Start();
 
         // Act
         _connectionManager.Add(first);
@@ -73,6 +75,7 @@ public class ConnectionManagerTests
     {
         // Arrange
         var id = "device-id";
+        _connectionManager.Start();
 
         // Act
         var found = _connectionManager.TryGet(id, out var outVal);
@@ -88,6 +91,7 @@ public class ConnectionManagerTests
         // Arrange
         var connection = Substitute.For<IConnection<ILightBulbData>>();
         connection.DeviceId.Returns("1");
+        _connectionManager.Start();
         _connectionManager.Add(connection);
 
         // Act
